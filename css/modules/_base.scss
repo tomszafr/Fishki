@@ -1,11 +1,10 @@
 body {
   font-family: 'Oswald', sans-serif;
-  background: url("../images/uk.svg");
+  background: url('../images/uk.svg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 }
-
 .mainWindow {
   width: 1050px;
   height: 600px;
@@ -41,31 +40,33 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2;
-}
-.start .startBox {
-  height: 400px;
-  width: 600px;
-  background-color: white;
-  border-radius: 20px;
-  opacity: 1;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  z-index:2;
+  .startBox {
+    height: 400px;
+    width: 600px;
+    background-color: white;
+    border-radius: 20px;
+    opacity: 1;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
 }
 
-.startBox h3 {
-  margin: 5px 0;
-}
-.startBox form select {
-  width: 200px;
-  height: 35px;
-  border: 1px solid #05ABE0;
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.3em;
-  margin: 15px 0;
+.startBox {
+  h3 {
+    margin: 5px 0;
+  }
+  form select {
+    width: 200px;
+    height: 35px;
+    border: 1px solid #05ABE0;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.3em;
+    margin: 15px 0;
+  }
 }
 
 #start {
@@ -81,50 +82,50 @@ body {
   border-radius: 10px;
   color: white;
 }
-
 .countBoxes {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
   text-align: center;
+  %countBox {
+    width: 235px;
+    height: 136px;
+    background-color: yellow;
+    background: url('../images/chest.png');
+    color: white;
+    box-sizing: border-box;
+    position: relative;
+    font-size: 1.4em;
+    padding-top: 2px;
+    display: inline-block;
+    span.countChange {
+      font-size: 3em;
+      color: #ff8700;
+      position: absolute;
+      top: -60px;
+      left: -10px;
+      right: 0;
+      opacity: 1;
+    }
+    span.no {
+      font-size: 1.7em;
+      color: purple;
+      display: block;
+      background-color: #aa9371;
+      width: 23px;
+      border-radius: 5px;
+      margin: 2px auto;
+    }
+  }
+  .known {
+    @extend %countBox;
+    margin-right: 150px;
+  } 
+  .learn {
+    @extend %countBox;
+    margin-left: 150px;
+  }
 }
-.countBoxes .known, .countBoxes .learn {
-  width: 235px;
-  height: 136px;
-  background-color: yellow;
-  background: url("../images/chest.png");
-  color: white;
-  box-sizing: border-box;
-  position: relative;
-  font-size: 1.4em;
-  padding-top: 2px;
-  display: inline-block;
-}
-.countBoxes .known span.countChange, .countBoxes .learn span.countChange {
-  font-size: 3em;
-  color: #ff8700;
-  position: absolute;
-  top: -60px;
-  left: -10px;
-  right: 0;
-  opacity: 1;
-}
-.countBoxes .known span.no, .countBoxes .learn span.no {
-  font-size: 1.7em;
-  color: purple;
-  display: block;
-  background-color: #aa9371;
-  width: 23px;
-  border-radius: 5px;
-  margin: 2px auto;
-}
-.countBoxes .known {
-  margin-right: 150px;
-}
-.countBoxes .learn {
-  margin-left: 150px;
-}
-
 #output {
   display: inline-block;
   width: 250px;
@@ -149,6 +150,11 @@ body {
 }
 
 #wInput {
+  &:hover {
+    -webkit-box-shadow: 0px 0px 12px 5px rgba(255, 255, 255, 1);
+    -moz-box-shadow: 0px 0px 12px 5px rgba(255, 255, 255, 1);
+    box-shadow: 0px 0px 12px 5px rgba(255, 255, 255, 1);
+  }
   display: inline-block;
   width: 250px;
   background: #1905ff;
@@ -172,11 +178,6 @@ body {
   -webkit-box-shadow: 0px 0px 12px 5px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 0px 0px 12px 5px rgba(0, 0, 0, 0.75);
   box-shadow: 0px 0px 12px 5px rgba(0, 0, 0, 0.75);
-}
-#wInput:hover {
-  -webkit-box-shadow: 0px 0px 12px 5px white;
-  -moz-box-shadow: 0px 0px 12px 5px white;
-  box-shadow: 0px 0px 12px 5px white;
 }
 
 .checkButton {
@@ -212,42 +213,29 @@ body {
   color: red;
   width: 200px;
   position: relative;
-}
-#display h1 {
-  margin: 10px;
-}
-#display span {
-  position: absolute;
-  left: 0;
-  right: 0;
-  font-size: 1.8em;
-}
-#display div {
-  width: 200px;
-  height: 90px;
-  background-color: yellow;
-  border: 2px solid brown;
-  border-radius: 10px;
-  color: brown;
-  padding: 0px 5px;
-  font-size: 1.1rem;
-  margin: 0 auto;
-  display: inline-block;
-}
-#display div h3 {
-  text-align: center;
-  margin: 3px 0;
-}
-
-@keyframes plusOne {
-  0% {
-    opacity: 1;
-    transform: translate(0px, 0px);
+  h1 {
+    margin: 10px;
   }
-  100% {
-    opacity: 0;
-    transform: translate(0px, -67px);
+  span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    font-size: 1.8em;
+  }
+  div {
+    width: 200px;
+    height: 90px;
+    background-color: yellow;
+    border: 2px solid brown;
+    border-radius: 10px;
+    color: brown;
+    padding: 0px 5px;
+    font-size: 1.1rem;
+    margin: 0 auto;
+    display: inline-block;
+    h3 {
+      text-align: center;
+      margin: 3px 0;
+    }
   }
 }
-
-/*# sourceMappingURL=style.css.map */

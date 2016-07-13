@@ -3,16 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Fiszki</title>
+    <link href='https://fonts.googleapis.com/css?family=Oswald:300,400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-<div id="output"></div>
-<input id="input" type="text" name="input"></input>
-<button id="check">Sprawdź</button>
-
-
+	<div class="start">
+		<div class="startBox">
+			<h1>Witaj w fish-kach!</h1>
+			<h3>Wybierz kategorię:</h3>
+			<form>
+				<select>
+					<option value="cat1">Kategoria 1</option>
+					<option value="cat2">Kategoria 2</option>
+					<option value="cat3">Kategoria 3</option>
+					<option value="own">Własna lista</option>
+				</select><br>
+				<input type="file" id="fileInput">
+			</form>
+			<button id="start">Start</button>
+		</div>
+	</div>
+	<div class="container">
+		<div class="mainWindow">
+			<div class="countBoxes">
+				<div class="known">Znam:<br><span class="no"></span><span class="countChange"></span></div><div id="display"></div><div class="learn">Poznaję:<br><span class="no"></span><span class="countChange"></span></div>
+			</div>
+			<form id="wordForm">
+				<div class="wordInput"><div id="output"></div><input id="wInput" type="text" name="input" placeholder="Wpisz odpowiedź!" autocomplete="off"></input></div>
+				<div><button type="submit" id="check" class="checkButton">Sprawdź!</button></div>
+			</form>
+		</div>
+	</div>
+	
    	<script src="js/jquery-2.2.4.js"></script>
+   	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
 	<script src="js/app.js"></script>
 </body>
 </html>
