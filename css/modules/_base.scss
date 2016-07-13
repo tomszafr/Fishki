@@ -68,7 +68,9 @@ body {
     margin: 15px 0;
   }
 }
-
+#fileInput {
+  display: none;
+}
 #start {
   width: 130px;
   height: 60px;
