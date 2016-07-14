@@ -1,30 +1,76 @@
 body {
   font-family: 'Oswald', sans-serif;
-  background: url('../images/uk.svg');
   background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
   background-size: cover;
   background-position: center;
+  background-image: url('../images/uk.svg');
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(
+  src='../images/uk.svg',
+  sizingMethod='scale');
+  & > img:last-of-type {
+     height: 50%;
+     position:  absolute;
+     left: 30px;
+     bottom:0;
+     top:5%;
+     margin: auto 0;
+     transform: rotate(-8deg);
+  }
+  & > img:first-of-type {
+     position:  absolute;
+     right: 0;
+     left: 0;
+     margin: 0 auto;
+     top:0;
+     transform: none;
+     width: 60%;
+  }
+  & > img {
+     position:  absolute;
+     width: 10%;
+     right: 5%;
+     bottom: 0;
+     margin-bottom: 5%;
+     transform: rotate(13deg);
+  }
 }
-.mainWindow {
-  width: 1050px;
-  height: 600px;
+.container {
   display: flex;
-  margin: 0 auto;
-  margin-top: 6vh;
-  justify-content: center;
   align-items: center;
-  flex-direction: column;
-  border-radius: 20px;
-  background: #87e0fd;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, #87e0fd 0%, #53cbf1 40%, #05abe0 100%);
-  /* FF3.6-15 */
-  background: -webkit-linear-gradient(top, #87e0fd 0%, #53cbf1 40%, #05abe0 100%);
-  /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom, #87e0fd 0%, #53cbf1 40%, #05abe0 100%);
-  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#87e0fd', endColorstr='#05abe0',GradientType=0 );
-  /* IE6-9 */
+  justify-content: center;
+  flex-direction: row-reverse;
+  height: 97vh;
+  width: 94vw;
+  min-width: 300px;
+  .mainWindow {
+    width: 900px;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 20px;
+    background: #87e0fd;
+    margin-top:30px;
+    z-index: 3;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, #87e0fd 0%, #53cbf1 40%, #05abe0 100%);
+    /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #87e0fd 0%, #53cbf1 40%, #05abe0 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #87e0fd 0%, #53cbf1 40%, #05abe0 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#87e0fd', endColorstr='#05abe0',GradientType=0 );
+    /* IE6-9 */
+   @media only screen and (max-width: 650px) {
+     width: 100%;
+     height: 100%;
+     margin: 0 0;
+   }
+  }
 }
 
 .start {
@@ -40,7 +86,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index:2;
+  z-index:5;
   .startBox {
     height: 400px;
     width: 600px;
@@ -84,23 +130,42 @@ body {
   border-radius: 10px;
   color: white;
 }
+.playerInfo {
+  width: 100%;
+  height: 50px;
+  background-color: white;
+  align-self: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
 .countBoxes {
   display: flex;
   align-items: stretch;
   justify-content: space-between;
   text-align: center;
+  min-height: 146px;
   %countBox {
-    width: 235px;
-    height: 136px;
+    width: 220px;
+    min-width: 80px;
+    height: 160px;
     background-color: yellow;
-    background: url('../images/chest.png');
+    background: url('../images/hat.svg');
+    background-repeat: no-repeat;
+    background-position: 0 35px;
+    bacgkround-size: contain;
     color: white;
     box-sizing: border-box;
     position: relative;
     font-size: 1.4em;
-    padding-top: 2px;
     display: inline-block;
-    span.countChange {
+    margin-top: 20px;
+    @media only screen and (max-width: 650px) {
+        width:105px;
+        height: 115px;
+        background-position: 0 25px;
+        font-size: 1.1em;
+    }
+    & > span.countChange {
       font-size: 3em;
       color: #ff8700;
       position: absolute;
@@ -108,30 +173,54 @@ body {
       left: -10px;
       right: 0;
       opacity: 1;
+      @media only screen and (max-width: 650px) {
+        font-size: 1.5em;
+        top: -30px;   
+      }
     }
     span.no {
       font-size: 1.7em;
-      color: purple;
+      color: white;
       display: block;
-      background-color: #aa9371;
-      width: 23px;
+      min-width: 23px;
+      min-height: 23px;
       border-radius: 5px;
-      margin: 2px auto;
+      margin: 0 auto;
+      margin-top: 22px;
+      @media only screen and (max-width: 650px) {
+        margin-top: 7px;
+      }
     }
   }
   .known {
     @extend %countBox;
-    margin-right: 150px;
+    margin-right: 120px;
+    @media only screen and (max-width: 650px) {
+        margin-right: 5px;
+    }
   } 
   .learn {
     @extend %countBox;
-    margin-left: 150px;
+    margin-left: 120px;
+    @media only screen and (max-width: 650px) {
+        margin-left: 5px;
+    }
+  }
+}
+.wordInput {
+  width:100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @media only screen and (max-width: 650px) {
+    flex-direction: column;
   }
 }
 #output {
   display: inline-block;
   width: 250px;
-  height: 100px;
+  height: auto;
   color: white;
   font-size: 1.8em;
   background: #ff0505;
@@ -149,6 +238,12 @@ body {
   line-height: 100px;
   text-transform: uppercase;
   margin-right: 50px;
+  @media only screen and (max-width: 650px) {
+    width: 180px;
+    font-size: 1.3em;
+    margin: 0 0;
+    line-height: 60px;
+  }
 }
 
 #wInput {
@@ -159,6 +254,9 @@ body {
   }
   display: inline-block;
   width: 250px;
+  -moz-box-sizing:    border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing:         border-box;
   background: #1905ff;
   /* Old browsers */
   background: -moz-linear-gradient(top, #1905ff 0%, #1403c6 48%, #160072 100%);
@@ -180,12 +278,18 @@ body {
   -webkit-box-shadow: 0px 0px 12px 5px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: 0px 0px 12px 5px rgba(0, 0, 0, 0.75);
   box-shadow: 0px 0px 12px 5px rgba(0, 0, 0, 0.75);
+  @media only screen and (max-width: 650px) {
+    width: 180px;
+    font-size: 1.3em;
+    margin: 10px 0;
+    line-height: 60px;
+  }
 }
 
 .checkButton {
   display: block;
   width: 130px;
-  height: 60px;
+  height: auto;
   text-transform: uppercase;
   line-height: 60px;
   background: #ff05f6;
@@ -206,15 +310,23 @@ body {
   cursor: pointer;
   margin: 0 auto;
   margin-top: 1em;
+  @media only screen and (max-width: 650px) {
+    width: 140px;
+    font-size: 1.1em;
+    margin: 10px auto;
+    line-height: 40px;
+  }
 }
 
 #display {
-  min-height: 60px;
+  min-height: 122px;
   font-size: 1.8rem;
   text-align: center;
   color: red;
-  width: 200px;
+  width: 60%;
   position: relative;
+  left:0;
+  right:0;
   h1 {
     margin: 10px;
   }
@@ -222,11 +334,16 @@ body {
     position: absolute;
     left: 0;
     right: 0;
-    font-size: 1.8em;
+    font-size: 2.5rem;
+    bottom:0;
+    @media only screen and (max-width: 650px) {
+      font-size: 1.5rem;
+      left:-5px;
+    }
   }
   div {
-    width: 200px;
-    height: 90px;
+    width: 90%;
+    min-height: 122px;
     background-color: yellow;
     border: 2px solid brown;
     border-radius: 10px;
@@ -239,5 +356,14 @@ body {
       text-align: center;
       margin: 3px 0;
     }
+    @media only screen and (max-width: 650px) {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+  }
+  @media only screen and (max-width: 650px) {
+    font-size: 1rem;
+    margin: 10px auto;
+    line-height: 40px;
   }
 }
