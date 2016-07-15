@@ -39,24 +39,37 @@ miss = 0;	   // Number of wrong answers
  * Functions
  */
 
+// Create a new user and initialise the game if a user can be added, if they're already in the base show error
+var createUser = function(usernameC) {
+	var errorSpan = $('<span>').addClass('error');
+	$.ajax({
+		type: 'POST',
+		url: 'users.php',
+		data: { user: usernameC },
+		dataType: "json",
+	}).done(function(response) {
+		initialiseGame();
+	}).fail(function(error) {
+		if (error.responseText.search('Duplicate') !== -1) {
+			errorSpan.html('Użytkownik jest już w bazie<br>');
+			$('#register').before(errorSpan);
+		}
+	});
+}
 // Sends AJAX requests for the MySQL database, updates total hits if 'GET'
 // @type - type of the AJAX call
 // @usernameJ - username, may be taken directly from input
 // @hits - number of hits in last game, for updating
+// @misses - number of misses in last game, for updating
 // @newUser - boolean, true if new user is supposed to be created
 // @callback - callback function
-var databaseRequest = function(type, usernameJ, hits, newUser, callback) {
+var databaseRequest = function(type, usernameJ, hits, misses, callback) {
 	var dataInput = '';
 	if (type === 'GET') {
 		dataInput = { user: usernameJ };
-	} else if (type === 'POST') {
-		if (newUser) {
-			dataInput = { newUser: usernameJ };
-		} else {
-			dataInput = { user: usernameJ, hits: hits };
-		}
+	} else if (type === 'PUT') {
+		dataInput = { user: usernameJ, hits: hits, misses: misses }
 	}
-	console.log(dataInput);
 	$.ajax({
 		type: type,
 		url: 'users.php',
@@ -64,15 +77,42 @@ var databaseRequest = function(type, usernameJ, hits, newUser, callback) {
 		dataType: "json",
 	}).done(function(response) {
 		console.log(response);
-		if (type === 'GET') {
-			$('#user').text(response.username);
-			$('#userHits').text(response.hits);
-		}
-		callback;
+		$('#user').text(response.username);
+		$('#userHits').text(response.hits);
+		$('#userMisses').text(response.misses);
+		$('#userAcc').text(calcAcc(response.hits, response.misses));
 	}).fail(function(error) {
 		console.log(error);
 	});
 };
+
+//Validate the username form
+//@username - username string to check
+var validate = function(username) {
+	var exp = /^[a-z0-9]+$/i;
+	if (username.length < 5) {
+		return 1; // Too short
+	} else if (username.length >= 25) {
+		return 2; // Too long
+	} else if (!exp.test(username)) {
+		return 3; // Not alphanumeric
+	} else {
+		console.log('walidacja ok');
+		return 4; // All good
+	}
+}
+
+// Calculate users acc in %
+// @hits - number of correct answers
+// @misses - number of wrong answers
+var calcAcc = function(hits, misses) {
+	var hitsIn = parseInt(hits);
+	var missesIn = parseInt(misses)
+	if ((hitsIn + missesIn) <= 0) {
+		return '0%';
+	}
+	return Math.floor((100 * hitsIn) / (hitsIn + missesIn)) + '%';
+}
 
 //Helper function to refresh the scores once they've been updated
 var refresh = function() {
@@ -105,14 +145,14 @@ var randomise = function(no, int) {
 //@position - initial position of the text relative to 'top'
 //@callback - callback function to execute once the animation is over
 var animFloat = function(value, target, color, position, callback) {
-	var countChanger = $('<span>').text(value).css('color', color).addClass('countChange').animate({opacity: 0, top: '-=40px'}, 2500, function() {
-		$(this).remove();
+	var countChanger = $('<span>').text(value).css('color', color).css('top', position).addClass('countChange').animate({opacity: 0, top: '-=40px'}, 2500, function() {
 		callback;
+		$(this).remove();
 	});
-	target.append(countChanger)
-}
+	target.append(countChanger);
+};
 
-//Updates the hit/miss counters
+//Updates the hit/miss counters fo current game
 //@direction: source and target boxes for change, used to display '+1' or '1' indicators above them
 //'k2l' - from known to learn
 //'l2k' - from learn to known
@@ -121,15 +161,18 @@ var updateCounters = function(direction) {
 	var knownCount = $('.known'),
 	learnCount = $('.learn');
 	if (direction === 'k2l') {
-		animFloat('+1', learnCount, 'red', '-60px');
-		animFloat('-1', knownCount, 'red', '-60px');
+		animFloat('+1', learnCount, 'red', '-3em');
+		animFloat('-1', knownCount, 'grey', '-3em');
 	} else if (direction === 'l2k') {
-		animFloat('-1', learnCount, 'green', '-60px');
-		animFloat('+1', knownCount, 'green', '-60px');
-	}
-	$('.known').find('.no').text(known.length);
-	$('.learn').find('.no').text(learn.length);
-}
+		animFloat('-1', learnCount, 'grey', '-3em');
+		animFloat('+1', knownCount, 'green', '-3em');
+	};
+	knownCount.find('.no').text(known.length);
+	learnCount.find('.no').text(learn.length);
+	$('#userCurHits').text(hit);
+	$('#userCurMisses').text(miss);
+	$('#userCurAcc').text(calcAcc(hit, miss));
+};
 
 //Change words form for the after-game statistics according to the preceeding number, hurray for Polish!
 //@word: limited to
@@ -158,14 +201,12 @@ var inflection = function(word, number) {
 
 //Show statistics after the game
 //@clear - if false remove the statistics box from DOM
-var displayStats = function(clear) {
+var displayEnd = function(clear) {
 	if (clear === false) {
 		$('#display').empty();
 		return;
 	};
-	var statistics = $('<div>').html(hit + " " + inflection('dobre', hit) + "</br>" + miss + " " + inflection('złe', miss));
-	var header = $('<h3>').text('Statystyki:');
-	statistics.prepend(header);
+	var statistics = $('<span>').text('Koniec!').css('font-size', '0').animate({ 'font-size': '2.5rem'}, 500);
 	$('#display').append(statistics);
 }
 
@@ -194,6 +235,46 @@ var _generate = function(array) {
 	return array[ran];
 }
 
+//Start the game
+var initialiseGame = function() {
+	databaseRequest('GET', username);
+	switch ($('.startBox select').find('option:selected').val()) {
+	case ('cat1'):
+		words=cat1;
+	break;
+	case ('cat2'): 
+		words=cat2;
+	break;
+	case ('cat3'):
+		words=cat3;
+	break;
+	case ('own'):
+		words=ownWords;
+	break;
+	}
+	wordInit();
+	updateCounters();
+	ran = generate();
+	$('.start').fadeOut();
+	$('#wInput').focus();
+}
+
+//Set up a new game after user finishes one
+var newGamePlus = function() {
+	known = [];
+	ran = 0;
+	hit = 0;
+	miss = 0;
+	ran = generate();
+	$('#wInput').prop('disabled', false).focus();
+	$('.checkButton').remove();
+	var check = $('<button>').text('Sprawdź!').addClass('checkButton').attr('type','submit');
+	$('#wordForm').find('div').last().append(check);
+	displayEnd(false)
+	$('#wInput').val("");
+	$('.start').fadeIn();
+} 
+
 //Main game logic
 var gameMain = function() {
 	if ($('#wInput').val() === words[ran][1]) {
@@ -205,31 +286,20 @@ var gameMain = function() {
 			updateCounters('l2k');
 			if (known.length === words.length) {
 				$('#wInput').prop('disabled', true);
-				animFloat('Koniec!', $('#display'), '#f90', '-90px', displayStats());
+				displayEnd()
 				$('.checkButton').remove();
-				databaseRequest('POST', username, hit);
+				databaseRequest('PUT', username, hit, miss);
 				var newGame = $('<button>').text('Nowa gra!').addClass('checkButton');
 				wordInit();
 				databaseRequest('GET', username, null, null, refresh());
 				newGame.on('click', function() {
-					known = [];
-					ran = 0;
-					hit = 0;
-					miss = 0;
-					ran = generate();
-					$('#wInput').prop('disabled', false).focus();
-					$('.checkButton').remove();
-					var check = $('<button>').text('Sprawdź!').addClass('checkButton').attr('type','submit');
-					$('#wordForm').find('div').last().append(check);
-					displayStats(false);
-					$('#wInput').val("");
-					$('.start').fadeIn();
+					newGamePlus();
 				});
 				$('#wordForm').find('div').last().append(newGame)
 				return;
 			};
 		};
-		animFloat('Dobrze!', $('#display'), 'green', 0);
+		animFloat('Dobrze!', $('#display'), 'green', '30px');
 		updateCounters();
 		ran = generate();
 	} else {
@@ -263,43 +333,45 @@ $(document).ready(function() {
 
 	// Upon clicking start load the selected category
 	$('#start').on('click', function() {
-		switch ($('.startBox select').find('option:selected').val()) {
-		case ('cat1'):
-			words=cat1;
-		break;
-		case ('cat2'): 
-			words=cat2;
-		break;
-		case ('cat3'):
-			words=cat3;
-		break;
-		case ('own'):
-			words=ownWords;
-		break;
-		}
 		username = $('#username').val();
-		databaseRequest('GET', username);
-		wordInit();
-		updateCounters();
-		ran = generate();
-		$('.start').fadeOut();
-		$('#wInput').focus();
+		$('#startSetup').find('.error').remove();
+		if($("#register").is(':checked')) {
+			var error = $('<span>').addClass('error');
+			switch (validate(username)) {
+			case 1:
+				error.html('Nazwa za krótka!<br>');
+				$('#register').before(error);
+				return;
+				break;
+			case 2:
+				error.html('Nazwa za długa!<br>');
+				$('#register').before(error);
+				return;
+				break;
+			case 3:
+				error.html('Nazwa może zawierać tylko litery i liczby!<br>');
+				$('#register').before(error);
+				return;
+				break;
+			case 4:
+				createUser(username);
+			}
+			return;
+		}
+		initialiseGame();
 	});
-	$('#register').on('click', function(e) {
-		e.preventDefault();
-		databaseRequest('POST', $('#username').val(), null, true);
-	});
-	// Change event for fileInput for when the user selects a file
+	
+	// Change event for #fileInput for when the user selects a file
 	$('#fileInput').on('change', function(e) {
-		var file = $("#fileInput").prop('files')[0];;
+		var file = $("#fileInput").prop('files')[0];
 		var reader = new FileReader();
 		reader.onload = function(e) {
 			var rows = reader.result.split(";");
 			for (var i = 0; i < rows.length-1; i++) {
 				ownWords.push(rows[i].split(":"));
-			}
+			};
 			console.log(ownWords);
-		}
+		};
 		reader.readAsText(file);    
 	});
 

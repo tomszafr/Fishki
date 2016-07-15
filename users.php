@@ -1,9 +1,9 @@
 <?php 
+include 'protected/db.php';
 
-$servername = "localhost:3307";
-$dbusername = "root";
-$password = "usbw";
-$dbname = "fishki";
+if($_SERVER['REQUEST_METHOD'] == 'PUT') {
+	parse_str(file_get_contents("php://input"),$_PUT);
+};
 
 if (isset($_GET['user'])) {
 	$username = $_GET['user'];
@@ -25,8 +25,8 @@ if (isset($_GET['user'])) {
 		echo "Error: " . $e->getMessage();
 	}
 	$conn = null;
-} else if (isset($_POST['newUser'])) {
-	$username = $_POST['newUser'];
+} else if (isset($_POST['user'])) {
+	$username = $_POST['user'];
 	
 	try {
 		$conn = new PDO("mysql:host=$servername;dbname=$dbname", $dbusername, $password);
@@ -37,16 +37,22 @@ if (isset($_GET['user'])) {
 		$stmt = $conn->prepare("INSERT INTO users (username) VALUES (:username)");
 		$stmt->bindParam(':username', $username);
 		$stmt->execute();
-		echo "Użytkownik dodany";
+		$getInfo = $conn->prepare("SELECT * FROM users WHERE username=:username");
+		$getInfo->bindParam(':username', $username);
+		$getInfo->execute();
+		$user = $getInfo->fetch(PDO::FETCH_ASSOC);
+		echo json_encode($user);
+		exit;
 	}
 	catch(PDOException $e)
 	{
 		echo "Error: " . $e->getMessage();
 	}
 	$conn = null;
-} else if (isset($_POST['user']) && isset($_POST['hits'])) {
-	$username = $_POST['user'];
-	$hits = $_POST['hits'];
+} else if (isset($_PUT['user']) && isset($_PUT['hits']) && isset($_PUT['misses'])) {
+	$username = $_PUT['user'];
+	$hits = $_PUT['hits'];
+	$misses = $_PUT['misses'];
 	
 	try {
 		$conn = new PDO("mysql:host=$servername;dbname=$dbname", $dbusername, $password);
@@ -54,17 +60,24 @@ if (isset($_GET['user'])) {
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	
 		// prepare sql and bind parameters
-		$stmt = $conn->prepare("UPDATE users SET hits=hits + :hits WHERE username=:username");
+		$stmt = $conn->prepare("UPDATE users SET hits=hits + :hits, misses=misses + :misses WHERE username=:username");
 		$stmt->bindParam(':username', $username);
 		$stmt->bindParam(':hits', $hits);
+		$stmt->bindParam(':misses', $misses);
 		$stmt->execute();
-		echo "Statystyki zaktualizowane";
+		$getInfo = $conn->prepare("SELECT * FROM users WHERE username=:username");
+		$getInfo->bindParam(':username', $username);
+		$getInfo->execute();
+		$user = $getInfo->fetch(PDO::FETCH_ASSOC);
+		echo json_encode($user);
 	}
 	catch(PDOException $e)
 	{
 		echo "Error: " . $e->getMessage();
 	}
 	$conn = null;
+} else {
+	echo "Niepoprawne dane";
 }
 
 ?>
